@@ -118,16 +118,25 @@ const app = express();
 const port = process.env.PORT || 5000;
 const server = http.createServer(app);
 
+app.use(express.json());
+
 // Connect to the database
 connectDb();
+
+// Socket.io setup
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+  },
+});
 
 // Middleware
 app.use(
   cors({
-    origin: "*",
+    origin: process.env.CLIENT_URL,
   })
 );
-app.use(express.json());
+
 
 // Routes
 app.get("/", (req, res) => {
@@ -135,12 +144,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api", route);
 
-// Socket.io setup
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-  },
-});
+
 
 const users = {};
 
